@@ -1,6 +1,8 @@
 package com.glenncai.studentsystem.controller;
 
 import com.glenncai.studentsystem.model.Gradebook;
+import com.glenncai.studentsystem.model.entity.CollegeStudent;
+import com.glenncai.studentsystem.service.StudentAndGradeService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,8 +24,13 @@ public class GradebookController {
   @Resource
   private Gradebook gradebook;
 
+  @Resource
+  private StudentAndGradeService studentAndGradeService;
+
   @GetMapping
   public String getStudents(Model m) {
+    Iterable<CollegeStudent> collegeStudents = studentAndGradeService.getGradebook();
+    m.addAttribute("students", collegeStudents);
     return "index";
   }
 
