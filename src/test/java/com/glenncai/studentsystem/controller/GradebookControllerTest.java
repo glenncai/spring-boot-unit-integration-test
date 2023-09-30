@@ -140,4 +140,15 @@ class GradebookControllerTest {
 
     assertFalse(studentDao.findById(1).isPresent(), "Student should not be present");
   }
+
+  @Test
+  @DisplayName("Error page")
+  void testErrorPage() throws Exception {
+    MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.get("/delete/student/{id}", 0))
+                                 .andExpect(status().isOk()).andReturn();
+    ModelAndView modelAndView = mvcResult.getModelAndView();
+    if (modelAndView != null) {
+      ModelAndViewAssert.assertViewName(modelAndView, "error");
+    }
+  }
 }
