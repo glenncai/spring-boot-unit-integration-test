@@ -1,7 +1,9 @@
 package com.glenncai.studentsystem.controller;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -122,5 +124,20 @@ class GradebookControllerTest {
 
     CollegeStudent verifyStudent = studentDao.findByEmailAddress("chad_darby@gmail.com");
     assertNotNull(verifyStudent, "Student should not be null");
+  }
+
+  @Test
+  @DisplayName("Delete student")
+  void testDeleteStudent() throws Exception {
+    assertTrue(studentDao.findById(1).isPresent(), "Student should be present");
+
+    MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.get("/delete/student/{id}", 1))
+                                 .andExpect(status().isOk()).andReturn();
+    ModelAndView modelAndView = mvcResult.getModelAndView();
+    if (modelAndView != null) {
+      ModelAndViewAssert.assertViewName(modelAndView, "index");
+    }
+
+    assertFalse(studentDao.findById(1).isPresent(), "Student should not be present");
   }
 }
