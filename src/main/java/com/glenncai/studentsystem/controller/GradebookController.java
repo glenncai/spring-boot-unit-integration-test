@@ -6,7 +6,9 @@ import com.glenncai.studentsystem.service.StudentAndGradeService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.annotation.Resource;
@@ -31,6 +33,13 @@ public class GradebookController {
   public String getStudents(Model m) {
     Iterable<CollegeStudent> collegeStudents = studentAndGradeService.getGradebook();
     m.addAttribute("students", collegeStudents);
+    return "index";
+  }
+
+  @PostMapping
+  public String createStudent(@ModelAttribute("student") CollegeStudent student, Model m) {
+    studentAndGradeService.createStudent(student.getFirstName(), student.getLastName(),
+                                         student.getEmailAddress());
     return "index";
   }
 

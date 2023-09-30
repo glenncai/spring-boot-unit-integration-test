@@ -1,19 +1,25 @@
 package com.glenncai.studentsystem.controller;
 
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import com.glenncai.studentsystem.model.GradebookCollegeStudent;
 import com.glenncai.studentsystem.model.entity.CollegeStudent;
+import com.glenncai.studentsystem.repository.StudentDao;
 import com.glenncai.studentsystem.service.StudentAndGradeService;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.ModelAndViewAssert;
 import org.springframework.test.web.servlet.MockMvc;
@@ -37,14 +43,27 @@ import javax.annotation.Resource;
 @SpringBootTest
 class GradebookControllerTest {
 
+  private static MockHttpServletRequest request;
+
   @Resource
   private JdbcTemplate jdbcTemplate;
 
   @Resource
   private MockMvc mockMvc;
 
+  @Resource
+  private StudentDao studentDao;
+
   @Mock
   private StudentAndGradeService studentAndGradeService;
+
+  @BeforeAll
+  public static void setUpRequest() {
+    request = new MockHttpServletRequest();
+    request.setParameter("firstName", "Chad");
+    request.setParameter("lastName", "Darby");
+    request.setParameter("emailAddress", "chad_darby@gmail.com");
+  }
 
   @BeforeEach
   void setUpDatabase() {
@@ -77,5 +96,26 @@ class GradebookControllerTest {
     if (modelAndView != null) {
       ModelAndViewAssert.assertViewName(modelAndView, "index");
     }
+  }
+
+  @Test
+  @DisplayName("Create student")
+  void testCreateStudent() throws Exception {
+    MvcResult mvcResult = mockMvc.perform(post("/")
+                                              .contentType(MediaType.APPLICATION_JSON)
+                                              .param("firstName",
+                                                     request.getParameterValues("firstName"))
+                                              .param("lastName",
+                                                     request.getParameterValues("lastName"))
+                                              .param("emailAddress",
+                                                     request.getParameterValues("emailAddress")))
+                                 .andExpect(status().isOk()).andReturn();
+    ModelAndView modelAndView = mvcResult.getModelAndView();
+    if (modelAndView != null) {
+      ModelAndViewAssert.assertViewName(modelAndView, "index");
+    }
+
+    CollegeStudent verifyStudent = studentDao.findByEmailAddress("chad_darby@gmail.com");
+    assertNotNull(verifyStudent, "Student should not be null");
   }
 }
