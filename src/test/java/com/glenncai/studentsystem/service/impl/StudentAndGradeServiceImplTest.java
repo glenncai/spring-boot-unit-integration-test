@@ -4,6 +4,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.glenncai.studentsystem.model.entity.CollegeStudent;
+import com.glenncai.studentsystem.model.entity.HistoryGrade;
+import com.glenncai.studentsystem.model.entity.MathGrade;
+import com.glenncai.studentsystem.model.entity.ScienceGrade;
+import com.glenncai.studentsystem.repository.HistoryGradesDao;
+import com.glenncai.studentsystem.repository.MathGradesDao;
+import com.glenncai.studentsystem.repository.ScienceGradesDao;
 import com.glenncai.studentsystem.repository.StudentDao;
 import com.glenncai.studentsystem.service.StudentAndGradeService;
 import org.junit.jupiter.api.AfterEach;
@@ -35,6 +41,15 @@ class StudentAndGradeServiceImplTest {
 
   @Resource
   StudentDao studentDao;
+
+  @Resource
+  MathGradesDao mathGradeDao;
+
+  @Resource
+  ScienceGradesDao scienceGradeDao;
+
+  @Resource
+  HistoryGradesDao historyGradeDao;
 
   @Resource
   private JdbcTemplate jdbcTemplate;
@@ -90,5 +105,23 @@ class StudentAndGradeServiceImplTest {
     }
 
     assertEquals(5, collegeStudents.size());
+  }
+
+  @Test
+  void testCreateGrade() {
+    // Create the grade
+    assertTrue(studentAndGradeService.createGrade(80.50, 1, "math"));
+    assertTrue(studentAndGradeService.createGrade(70.50, 1, "science"));
+    assertTrue(studentAndGradeService.createGrade(60.50, 1, "history"));
+
+    // Get all grades with studentId
+    Iterable<MathGrade> mathGrades = mathGradeDao.findGradeByStudentId(1);
+    Iterable<ScienceGrade> scienceGrades = scienceGradeDao.findGradeByStudentId(1);
+    Iterable<HistoryGrade> historyGrades = historyGradeDao.findGradeByStudentId(1);
+
+    // Verify there is grades
+    assertTrue(mathGrades.iterator().hasNext(), "Student has math grade");
+    assertTrue(scienceGrades.iterator().hasNext(), "Student has science grade");
+    assertTrue(historyGrades.iterator().hasNext(), "Student has history grade");
   }
 }

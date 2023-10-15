@@ -40,4 +40,14 @@ public interface StudentAndGradeService {
    * @return gradebook iterable
    */
   Iterable<CollegeStudent> getGradebook();
+
+  /**
+   * Create grade
+   *
+   * @param grade     grade
+   * @param studentId student id
+   * @param gradeType grade type
+   * @return true if grade is created
+   */
+  boolean createGrade(double grade, int studentId, String gradeType);
 }

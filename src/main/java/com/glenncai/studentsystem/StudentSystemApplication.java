@@ -27,7 +27,7 @@ public class StudentSystemApplication {
   @Bean
   @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
   @Qualifier("mathGrades")
-  MathGrade getMathGrade() {
+  MathGrade getGrade() {
     return new MathGrade();
   }
 
